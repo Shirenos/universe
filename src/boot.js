@@ -1,7 +1,7 @@
 import './style.css';
 import { showFallback } from './fallback.js';
 
-// Проверяем WebGL до загрузки тяжёлого бандла Three.js
+// Check for WebGL before loading the heavy Three.js bundle
 function hasWebGL() {
   try {
     const c = document.createElement('canvas');
@@ -17,5 +17,5 @@ function hasWebGL() {
 if (hasWebGL()) {
   import('./main.js').catch((err) => showFallback(err));
 } else {
-  showFallback('WebGL недоступен');
+  showFallback('WebGL unavailable');
 }

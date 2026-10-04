@@ -2,7 +2,7 @@ import { PROJECTS } from './projects.js';
 
 const $ = (id) => document.getElementById(id);
 
-/* ================= Запасной вариант без WebGL ================= */
+/* ================= Fallback without WebGL ================= */
 export function showFallback(reason) {
   document.body.classList.remove('is-loading');
   document.body.classList.add('is-fallback');

@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 
-// Проект-репозиторий на GitHub Pages живёт по адресу /universe/
+// A GitHub Pages project repository is served from /universe/
 export default defineConfig({
   base: '/universe/',
   build: {

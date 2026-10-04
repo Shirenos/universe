@@ -13,7 +13,7 @@ export const LEVELS = {
 };
 export const LEVEL_ORDER = ['high', 'medium', 'low'];
 
-// детерминированный ГСЧ — одинаковая вселенная при каждой загрузке
+// deterministic RNG - the same universe on every load
 function mulberry32(a) {
   return function () {
     a |= 0; a = (a + 0x6d2b79f5) | 0;
@@ -32,13 +32,13 @@ export function createWorld(levelName) {
   const uPx = { value: 1 };
   const uLightPos = { value: new THREE.Vector3() };
 
-  /* ---- слои параллакса ---- */
-  const skyLayer = new THREE.Group();   // самый дальний
+  /* ---- parallax layers ---- */
+  const skyLayer = new THREE.Group();   // farthest layer
   const starLayer = new THREE.Group();
   const systemLayer = new THREE.Group();
   root.add(skyLayer, starLayer, systemLayer);
 
-  /* ---- туманность ---- */
+  /* ---- nebula ---- */
   const nebulaMat = new THREE.ShaderMaterial({
     vertexShader: nebulaVert, fragmentShader: nebulaFrag,
     uniforms: { uTime, uOct: { value: L.oct } },
@@ -49,7 +49,7 @@ export function createWorld(levelName) {
   nebula.frustumCulled = false;
   skyLayer.add(nebula);
 
-  /* ---- полярное сияние ---- */
+  /* ---- aurora ---- */
   const auroraMat = new THREE.ShaderMaterial({
     vertexShader: auroraVert, fragmentShader: auroraFrag,
     uniforms: { uTime, uStrength: { value: 1.0 } },
@@ -63,7 +63,7 @@ export function createWorld(levelName) {
   aurora.visible = L.aurora;
   starLayer.add(aurora);
 
-  /* ---- звёзды ---- */
+  /* ---- stars ---- */
   const N = L.stars;
   const pos = new Float32Array(N * 3);
   const size = new Float32Array(N);
@@ -101,7 +101,7 @@ export function createWorld(levelName) {
   stars.frustumCulled = false;
   starLayer.add(stars);
 
-  /* ---- ядро ---- */
+  /* ---- core ---- */
   const coreMat = new THREE.ShaderMaterial({
     vertexShader: coreVert, fragmentShader: coreFrag,
     uniforms: { uTime, uBoost: { value: 1 } },
@@ -118,12 +118,12 @@ export function createWorld(levelName) {
   coreGroup.add(core, glow);
   systemLayer.add(coreGroup);
 
-  // PointLight нужен только для пояса астероидов (Lambert)
+  // the PointLight is only needed for the asteroid belt (Lambert)
   const sun = new THREE.PointLight(0xbfd0ff, 3.2, 0, 0);
   systemLayer.add(sun);
   systemLayer.add(new THREE.AmbientLight(0x4a3f8f, 0.55));
 
-  /* ---- планеты ---- */
+  /* ---- planets ---- */
   const planets = [];
   const tmpC = new THREE.Color();
   PROJECTS.forEach((p, idx) => {
@@ -153,7 +153,7 @@ export function createWorld(levelName) {
     body.rotation.z = 0.25 + idx * 0.2;
     holder.add(body);
 
-    // атмосфера
+    // atmosphere
     const scaleA = 1.28;
     const lim = Math.sqrt(1 - 1 / (scaleA * scaleA));
     const atmoMat = new THREE.ShaderMaterial({
@@ -167,7 +167,7 @@ export function createWorld(levelName) {
     const atmo = new THREE.Mesh(new THREE.SphereGeometry(b.size * scaleA, 48, 32), atmoMat);
     holder.add(atmo);
 
-    // кольцо
+    // ring
     let ring = null;
     if (b.ring) {
       const inner = b.size * 1.55, outer = b.size * 2.5;
@@ -183,7 +183,7 @@ export function createWorld(levelName) {
       ring.rotation.y = 0.2;
       holder.add(ring);
     }
-    // тонкий светящийся «гало»-обруч
+    // thin glowing "halo" hoop
     if (b.halo) {
       const hr = b.size * 1.75;
       ring = new THREE.Mesh(new THREE.RingGeometry(hr, hr * 1.04, 128, 1), new THREE.MeshBasicMaterial({
@@ -195,7 +195,7 @@ export function createWorld(levelName) {
       holder.add(ring);
     }
 
-    // спутник у первой планеты
+    // moon of the first planet
     let moon = null;
     if (p.id === 'habit') {
       moon = new THREE.Group();
@@ -206,7 +206,7 @@ export function createWorld(levelName) {
       holder.add(moon);
     }
 
-    // невидимая «зона попадания» — удобно попадать пальцем
+    // invisible "hit zone" - easier to tap with a finger
     const hit = new THREE.Mesh(
       new THREE.SphereGeometry(Math.max(b.size * 1.7, 2.1), 12, 8),
       new THREE.MeshBasicMaterial({ visible: false }),
@@ -214,7 +214,7 @@ export function createWorld(levelName) {
     hit.userData.index = idx;
     holder.add(hit);
 
-    // линия орбиты
+    // orbit line
     const pts = [];
     for (let i = 0; i <= 160; i++) {
       const a = (i / 160) * Math.PI * 2;
@@ -235,7 +235,7 @@ export function createWorld(levelName) {
     });
   });
 
-  /* ---- пояс астероидов ---- */
+  /* ---- asteroid belt ---- */
   const beltGroup = new THREE.Group();
   beltGroup.rotation.x = -0.03;
   const maxAst = L.asteroids;
@@ -262,7 +262,7 @@ export function createWorld(levelName) {
   beltGroup.add(belt);
   systemLayer.add(beltGroup);
 
-  /* ---- кометы ---- */
+  /* ---- comets ---- */
   const TRAIL = 42, NC = 3;
   const cPos = new Float32Array(NC * TRAIL * 3);
   const cSize = new Float32Array(NC * TRAIL);
@@ -330,7 +330,7 @@ export function createWorld(levelName) {
     cGeo.attributes.aSize.needsUpdate = true;
   }
 
-  /* ---- публичный API ---- */
+  /* ---- public API ---- */
   const _v = new THREE.Vector3();
   const _lp = new THREE.Vector3();
 
@@ -346,7 +346,7 @@ export function createWorld(levelName) {
   }
 
   function update(dt, time, animate, camera) {
-    // дальний слой синхронизируем с камерой, чтобы небо «не приближалось»
+    // keep the far layer in sync with the camera so the sky does not "get closer"
     skyLayer.position.copy(camera.position);
     if (animate) uTime.value = time;
     if (animate) {

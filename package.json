@@ -2,7 +2,7 @@
   "name": "universe",
   "version": "1.0.0",
   "private": true,
-  "description": "Вселенная Shiren — интерактивный 3D-сайт на Three.js",
+  "description": "Shiren's Universe - an interactive 3D website built with Three.js",
   "type": "module",
   "scripts": {
     "dev": "vite",

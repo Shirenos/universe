@@ -1,4 +1,4 @@
-// GLSL-шейдеры вселенной. Все эффекты процедурные: ни одной текстуры.
+// GLSL shaders of the universe. Every effect is procedural: not a single texture.
 
 export const NOISE = /* glsl */ `
 float hash31(vec3 p){
@@ -33,7 +33,7 @@ const OUT = /* glsl */ `
 #include <colorspace_fragment>
 `;
 
-/* ---------- Звёзды ---------- */
+/* ---------- Stars ---------- */
 export const starVert = /* glsl */ `
 attribute float aSize;
 attribute float aPhase;
@@ -66,7 +66,7 @@ void main(){
 }
 `;
 
-/* ---------- Туманность (небесная сфера) ---------- */
+/* ---------- Nebula (sky sphere) ---------- */
 export const nebulaVert = /* glsl */ `
 varying vec3 vDir;
 void main(){
@@ -83,7 +83,7 @@ varying vec3 vDir;
 void main(){
   vec3 d = normalize(vDir);
   float t = uTime * 0.012;
-  // «галактическая плоскость» — полоса плотности
+  // "galactic plane" - a band of higher density
   float band = exp(-pow((d.y + 0.18 * sin(d.x * 2.6 + 0.7) + 0.05) * 2.6, 2.0));
   vec3 q = d * 2.2 + vec3(t, -t * 0.6, t * 0.4);
   float w = fbm(q * 0.8 + 3.0, uOct);
@@ -101,16 +101,16 @@ void main(){
   col += indigo * smoothstep(0.30, 0.78, n1) * dens * 1.15;
   col += violet * smoothstep(0.42, 0.88, n2) * (0.25 + band) * 0.85;
   col += cyan   * smoothstep(0.50, 0.90, n3) * smoothstep(0.35, 0.8, n1) * (0.2 + band) * 0.75;
-  // светлые пылевые прожилки
+  // bright dust lanes
   col += vec3(0.8, 0.7, 1.0) * pow(smoothstep(0.6, 0.95, n2 * n1 * 1.8), 3.0) * 0.18 * band;
-  // лёгкое затемнение к полюсам
+  // slight darkening towards the poles
   col *= 0.75 + 0.25 * (1.0 - abs(d.y));
   gl_FragColor = vec4(col * 0.42, 1.0);
   ${OUT}
 }
 `;
 
-/* ---------- Полярное сияние (лента) ---------- */
+/* ---------- Aurora (ribbon) ---------- */
 export const auroraVert = /* glsl */ `
 uniform float uTime;
 varying vec2 vUv;
@@ -149,7 +149,7 @@ void main(){
 }
 `;
 
-/* ---------- Ядро ---------- */
+/* ---------- Core ---------- */
 export const coreVert = /* glsl */ `
 varying vec3 vObj;
 varying vec3 vN;
@@ -214,7 +214,7 @@ void main(){
 }
 `;
 
-/* ---------- Планета ---------- */
+/* ---------- Planet ---------- */
 export const planetVert = /* glsl */ `
 varying vec3 vObj;
 varying vec3 vNW;
@@ -259,12 +259,12 @@ void main(){
   float diff = smoothstep(-0.12, 0.85, ndl);
   float fres = pow(1.0 - max(dot(N, V), 0.0), 3.0);
   vec3 lit = col * (0.05 + diff * 1.1);
-  // огни на ночной стороне
+  // lights on the night side
   float lights = smoothstep(0.7, 0.9, fbm(p * 7.0, 3)) * (1.0 - diff);
   lit += uColC * lights * 0.9;
-  // атмосферная кайма
+  // atmospheric rim
   lit += uAtmo * fres * (0.12 + 0.95 * smoothstep(-0.35, 0.5, ndl)) * 0.75;
-  // подсветка при наведении
+  // hover highlight
   lit += (uAtmo * 0.28 + 0.06) * uHover * (0.35 + fres * 2.2);
   gl_FragColor = vec4(lit, 1.0);
   ${OUT}
@@ -292,7 +292,7 @@ varying vec3 vN;
 varying vec3 vV;
 varying vec3 vWN;
 void main(){
-  float d = -dot(normalize(vN), normalize(vV));   // BackSide: от 0 на краю до -uLim у лимба планеты
+  float d = -dot(normalize(vN), normalize(vV));   // BackSide: from 0 at the edge to -uLim at the planet's limb
   d = clamp(d / uLim, 0.0, 1.0);
   float g = pow(d, 2.2);
   float lit = 0.3 + 0.7 * smoothstep(-0.5, 0.6, dot(vWN, normalize(uLightDir)));
@@ -302,7 +302,7 @@ void main(){
 }
 `;
 
-/* ---------- Кольцо ---------- */
+/* ---------- Ring ---------- */
 export const ringVert = /* glsl */ `
 varying float vR;
 varying vec3 vWP;
@@ -328,14 +328,14 @@ void main(){
   float n = vnoise(vec3(k * 40.0, 3.0, 5.0));
   float a = smoothstep(0.0, 0.08, k) * smoothstep(1.0, 0.85, k);
   a *= 0.25 + 0.6 * bands * (0.5 + n);
-  a *= 1.0 - smoothstep(0.38, 0.46, k) * smoothstep(0.54, 0.46, k) * 0.9; // щель Кассини
+  a *= 1.0 - smoothstep(0.38, 0.46, k) * smoothstep(0.54, 0.46, k) * 0.9; // Cassini division
   vec3 col = mix(uColA, uColB, k + n * 0.3);
   gl_FragColor = vec4(col * a * (1.0 + uHover * 1.2), a * 0.9);
   ${OUT}
 }
 `;
 
-/* ---------- Кометы ---------- */
+/* ---------- Comets ---------- */
 export const cometVert = /* glsl */ `
 attribute float aSize;
 attribute float aAlpha;

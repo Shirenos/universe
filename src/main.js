@@ -12,7 +12,7 @@ const $ = (id) => document.getElementById(id);
 const stage = $('stage');
 const params = new URLSearchParams(location.search);
 
-/* ================= Настройки качества ================= */
+/* ================= Quality settings ================= */
 const coarse = matchMedia('(pointer: coarse)').matches;
 const smallScreen = Math.min(innerWidth, innerHeight) < 600;
 const cores = navigator.hardwareConcurrency || 4;
@@ -27,7 +27,7 @@ function pickLevel() {
 let levelName = pickLevel();
 const adaptive = params.get('adaptive') !== '0';
 
-/* ================= Анимации: вкл/выкл ================= */
+/* ================= Animations: on/off ================= */
 const reduceMQ = matchMedia('(prefers-reduced-motion: reduce)');
 const stored = localStorage.getItem('universe-motion');
 let animOn = stored ? stored === 'on' : !reduceMQ.matches;
@@ -53,7 +53,7 @@ reduceMQ.addEventListener?.('change', (e) => {
 });
 renderMotionBtn();
 
-/* ================= Рендерер ================= */
+/* ================= Renderer ================= */
 let renderer;
 try {
   renderer = new THREE.WebGLRenderer({
@@ -65,7 +65,7 @@ try {
 }
 if (!renderer || !renderer.getContext()) {
   if (renderer) showFallback('no context');
-  throw new Error('WebGL недоступен');
+  throw new Error('WebGL unavailable');
 }
 renderer.setClearColor(0x03030a, 1);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -79,7 +79,7 @@ const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 30
 const world = createWorld(levelName);
 scene.add(world.root);
 
-/* ---- постобработка ---- */
+/* ---- post-processing ---- */
 let composer = null, bloom = null;
 function buildComposer() {
   try {
@@ -98,7 +98,7 @@ buildComposer();
 let dpr = 1;
 function computeDpr() {
   const cap = LEVELS[levelName].dpr;
-  const budget = levelName === 'low' ? 1.6e6 : 3.6e6;           // «бюджет» пикселей
+  const budget = levelName === 'low' ? 1.6e6 : 3.6e6;           // per-frame pixel "budget"
   const byBudget = Math.sqrt(budget / (innerWidth * innerHeight));
   return Math.max(0.75, Math.min(window.devicePixelRatio || 1, cap, byBudget));
 }
@@ -119,7 +119,7 @@ function resize() {
 let resizeRaf = 0;
 addEventListener('resize', () => { cancelAnimationFrame(resizeRaf); resizeRaf = requestAnimationFrame(resize); });
 
-/* ================= Камера и управление ================= */
+/* ================= Camera and controls ================= */
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.07;
@@ -162,7 +162,7 @@ function overviewPose() {
   };
 }
 
-/* сдвиг кадра, чтобы планета не пряталась за панелью */
+/* shift the frame so the planet does not hide behind the panel */
 let shift = 0;
 function applyShift() {
   const w = innerWidth, h = innerHeight;
@@ -174,7 +174,7 @@ function applyShift() {
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
 
-/* ================= Панель и навигация ================= */
+/* ================= Panel and navigation ================= */
 const panel = $('panel');
 const nav = $('planet-nav');
 const navBtns = [];
@@ -226,7 +226,7 @@ function closePanelUi() {
 }
 panel.setAttribute('inert', '');
 
-/* ================= Перелёты ================= */
+/* ================= Camera flights ================= */
 let flight = null;
 let overviewSaved = null;
 const _a = new THREE.Vector3();
@@ -238,7 +238,7 @@ function focusPose(i) {
   const rad = _a.copy(pw).setY(0);
   if (rad.lengthSq() < 1e-4) rad.set(0, 0, 1);
   rad.normalize();
-  // камера сбоку-«изнутри»: видим освещённую ядром часть планеты и ядро на фоне
+  // camera from the side, "from the inside": we see the core-lit side of the planet with the core in the background
   const ang = Math.PI - 0.95;
   const dir = new THREE.Vector3(
     rad.x * Math.cos(ang) - rad.z * Math.sin(ang), 0,
@@ -324,7 +324,7 @@ addEventListener('keydown', (e) => {
   }
 });
 
-/* ================= Наведение и клик ================= */
+/* ================= Hover and click ================= */
 const raycaster = new THREE.Raycaster();
 const ndc = new THREE.Vector2();
 const pointer = { x: 0, y: 0, nx: 0, ny: 0, inside: false, dirty: false, down: false, sx: 0, sy: 0, st: 0, type: 'mouse' };
@@ -388,7 +388,7 @@ function updateLabel() {
   label.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -100%)`;
 }
 
-/* ================= Вступление ================= */
+/* ================= Intro ================= */
 const INTRO_DUR = 6.8;
 let introT = 0;
 const introEl = $('intro');
@@ -405,7 +405,7 @@ function setIntroPose(u) {
   camera.lookAt(0, 0, 0);
   const fov = 55 + (1 - e) * 22;
   if (Math.abs(camera.fov - fov) > 0.01) { camera.fov = fov; camera.updateProjectionMatrix(); }
-  // ядро разгорается, планеты появляются
+  // the core ignites, planets fade in
   const coreK = ease(clamp01(u / 0.45));
   world.coreGroup.scale.setScalar(0.01 + 0.99 * coreK);
   world.coreMat.uniforms.uBoost.value = 0.3 + 0.7 * coreK;
@@ -445,7 +445,7 @@ function finishIntro() {
 }
 $('btn-skip').addEventListener('click', finishIntro);
 
-/* ================= Адаптивное качество ================= */
+/* ================= Adaptive quality ================= */
 function applyLevel(name) {
   levelName = name;
   world.setLevel(name);
@@ -460,7 +460,7 @@ document.body.dataset.quality = levelName;
 let govAcc = 0, govN = 0, govSkip = 60;
 document.addEventListener('visibilitychange', () => { govAcc = 0; govN = 0; govSkip = 40; });
 
-/* ================= Главный цикл ================= */
+/* ================= Main loop ================= */
 const clock = { last: performance.now(), sim: 0 };
 const par = { x: 0, y: 0 };
 let firstFrame = true;
@@ -474,7 +474,7 @@ function frame(now) {
   const animating = animOn;
   if (animating) clock.sim += dt;
 
-  // --- вступление ---
+  // --- intro ---
   if (state.mode === 'intro') {
     introT += dt;
     const u = clamp01(introT / INTRO_DUR);
@@ -484,7 +484,7 @@ function frame(now) {
     needsRender = true;
   }
 
-  // --- перелёт камеры ---
+  // --- camera flight ---
   if (state.mode === 'flying' && flight) {
     flight.t += dt;
     const k = flight.dur > 0 ? clamp01(flight.t / flight.dur) : 1;
@@ -508,25 +508,25 @@ function frame(now) {
       done && done();
     }
   } else if (state.mode === 'focus' && state.focus >= 0) {
-    // следим за движущейся планетой
+    // follow the moving planet
     const pl = world.planets[state.focus];
     _fp.copy(pl.world);
     _prev.copy(_fp).sub(controls.target);
     if (_prev.lengthSq() > 1e-10) { camera.position.add(_prev); controls.target.copy(_fp); needsRender = true; }
   }
 
-  // --- плавное замедление орбиты у выбранной планеты ---
+  // --- smoothly slow the orbit near the selected planet ---
   for (const p of world.planets) {
     const goal = p.focusTarget ? 0.08 : 1;
     p.speedScale += (goal - p.speedScale) * Math.min(1, dt * 2.5);
   }
 
-  // --- управление ---
+  // --- controls ---
   if (controls.enabled || state.mode === 'intro') {
     if (controls.enabled && controls.update(dt)) needsRender = true;
   }
 
-  // --- параллакс от мыши (слои на разной «глубине») ---
+  // --- mouse parallax (layers at different "depths") ---
   if (animating && pointer.type !== 'touch' && pointer.inside) {
     par.x += (pointer.nx - par.x) * Math.min(1, dt * 2.5);
     par.y += (pointer.ny - par.y) * Math.min(1, dt * 2.5);
@@ -541,20 +541,20 @@ function frame(now) {
   world.skyLayer.rotation.x = par.y * 0.008;
   world.systemLayer.position.set(par.x * 0.7, -par.y * 0.45, 0);
 
-  // --- простой режим: без анимаций рендерим только по необходимости ---
+  // --- reduced mode: with animations off, render only when needed ---
   if (!animating && !needsRender) return;
 
-  // --- мир ---
+  // --- world ---
   world.update(animating ? dt : 0, clock.sim, animating, camera);
 
-  // --- наведение ---
+  // --- hover ---
   if (pointer.dirty && !pointer.down && state.mode !== 'intro' && state.mode !== 'flying') {
     pointer.dirty = false;
     setHover(pick(pointer.x, pointer.y));
   } else if (!animating) pointer.dirty = false;
   updateLabel();
 
-  // --- рендер ---
+  // --- render ---
   if (useBloom && composer) composer.render(dt);
   else renderer.render(scene, camera);
   needsRender = false;
@@ -569,7 +569,7 @@ function frame(now) {
     });
   }
 
-  // --- сторож FPS: при просадке снижаем качество ---
+  // --- FPS watchdog: lower the quality when frames get slow ---
   if (adaptive && animating && (state.mode === 'overview' || state.mode === 'focus') && !document.hidden) {
     if (govSkip > 0) { govSkip--; }
     else {
@@ -581,14 +581,14 @@ function frame(now) {
         if (avg > 0.036 && idx < LEVEL_ORDER.length - 1) {
           applyLevel(LEVEL_ORDER[idx + 1]);
           govSkip = 60;
-          console.info('[universe] FPS низкий — качество:', levelName);
+          console.info('[universe] low FPS - quality:', levelName);
         }
       }
     }
   }
 }
 
-/* ================= Запуск ================= */
+/* ================= Startup ================= */
 $('panel-gh').addEventListener('click', () => {});
 const wantPlanet = PROJECTS.findIndex((p) => `#${p.id}` === location.hash);
 const skipIntro = !animOn || wantPlanet >= 0 || params.has('nointro');
@@ -604,6 +604,6 @@ if (skipIntro) {
 requestAnimationFrame((t) => { clock.last = t; frame(t); });
 if (wantPlanet >= 0) setTimeout(() => selectPlanet(wantPlanet, { noFocus: true }), 50);
 
-// отладочный хук для автотестов (ничего не раскрывает)
+// debug hook for automated checks (exposes nothing sensitive)
 window.__universe = { get level() { return levelName; }, get mode() { return state.mode; }, select: selectPlanet, close: closeFocus,
   screenOf(i) { const v = world.planets[i].world.clone().project(camera); return { x: (v.x * 0.5 + 0.5) * innerWidth, y: (-v.y * 0.5 + 0.5) * innerHeight }; } };

@@ -1,4 +1,4 @@
-// Headless-проверка: node scripts/check.mjs <url> <out.png> [--w=1366 --h=800 --mobile --wait=ms]
+// Headless check: node scripts/check.mjs <url> <out.png> [--w=1366 --h=800 --mobile --wait=ms]
 import { chromium } from 'playwright-core';
 const [url, out] = process.argv.slice(2);
 const opt = Object.fromEntries(process.argv.slice(4).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));

@@ -1,4 +1,4 @@
-// Данные «планет». Никаких личных данных — только публичные проекты.
+// Data for the "planets". No personal data - public projects only.
 export const PROJECTS = [
   {
     id: 'habit',
