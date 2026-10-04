@@ -52,4 +52,21 @@ export const PROJECTS = [
     orbit: { radius: 23.5, speed: 0.052, phase: 4.7, incl: 0.1, tilt: 0.0 },
     body: { size: 1.4, spin: 0.15, colA: [0.32, 0.03, 0.28], colB: [0.95, 0.25, 0.65], colC: [1.0, 0.75, 0.4], atmo: [1.0, 0.4, 0.8], bands: 6, bandMix: 0.5, seed: 17.3, halo: true },
   },
+  {
+    id: 'ml',
+    name: 'ML с нуля',
+    kind: 'Библиотека на NumPy',
+    desc:
+      'Классические алгоритмы машинного обучения, написанные с нуля на чистом NumPy: линейная и логистическая регрессия, нейросеть с обратным распространением ошибки, k-means и PCA. Математика прямо в докстрингах, проверка тестами и графиками.',
+    feats: [
+      'Линейная регрессия: замкнутая форма и градиентный спуск; логистическая регрессия',
+      'Многослойный перцептрон с ручным backprop, проверенным численным градиентом',
+      'k-means (k-means++) и PCA через SVD',
+      'Тесты pytest со сверкой с scikit-learn, ruff, mypy и CI на Python 3.11–3.13',
+    ],
+    stack: ['Python', 'NumPy', 'Matplotlib', 'pytest', 'ruff', 'GitHub Actions'],
+    url: 'https://github.com/Shirenos/ml-from-scratch',
+    orbit: { radius: 29.5, speed: 0.04, phase: 1.7, incl: -0.04, tilt: 0.0 },
+    body: { size: 1.35, spin: 0.1, colA: [0.02, 0.1, 0.28], colB: [0.1, 0.62, 0.95], colC: [0.75, 0.55, 1.0], atmo: [0.3, 0.85, 1.0], bands: 11, bandMix: 0.6, seed: 24.9 },
+  },
 ];

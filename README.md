@@ -35,7 +35,7 @@ An interactive 3D website built with **Three.js**: dark space, a shader-driven s
 - If WebGL is unavailable, a plain list of projects is shown instead (fallback).
 - Three.js and the Inter font come from `npm` and are bundled locally: **no CDNs**.
 
-Debug URL parameters: `?q=low|medium|high` forces a quality level, `?adaptive=0` disables the FPS watchdog, `?nointro` skips the intro; `#habit`, `#schedule`, `#universe` open the corresponding planet right away.
+Debug URL parameters: `?q=low|medium|high` forces a quality level, `?adaptive=0` disables the FPS watchdog, `?nointro` skips the intro; `#habit`, `#schedule`, `#universe`, `#ml` open the corresponding planet right away.
 
 ## 🛠 Stack
 
