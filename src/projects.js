@@ -86,4 +86,21 @@ export const PROJECTS = [
     orbit: { radius: 35.5, speed: 0.033, phase: 3.3, incl: 0.06, tilt: 0.0 },
     body: { size: 1.3, spin: 0.12, colA: [0.03, 0.03, 0.03], colB: [0.45, 0.45, 0.45], colC: [0.95, 0.95, 0.95], atmo: [0.85, 0.85, 0.85], bands: 9, bandMix: 0.7, seed: 31.7 },
   },
+  {
+    id: 'assistant',
+    name: 'Шира',
+    kind: 'Personal AI Assistant',
+    desc:
+      'Браузерный личный ИИ-ассистент: стриминг-чат с сильным системным промптом, память и задачи в localStorage, расписание группы 221461 ТулГУ, голос (STT/TTS). Работает с твоим OpenAI-совместимым ключом (Groq / OpenRouter / локальный llama.cpp).',
+    feats: [
+      'Стриминг ответов и Markdown; команды /task, /remember, /schedule',
+      'Память профиля и заметок, экспорт/импорт JSON, инъекция в контекст',
+      'Кэш расписания ТулГУ + ночное обновление через GitHub Actions',
+      'Тёмный graphite UI, русский/английский, Web Speech API',
+    ],
+    stack: ['JavaScript', 'localStorage', 'Web Speech API', 'OpenAI-compatible API', 'GitHub Pages', 'GitHub Actions'],
+    url: 'https://shirenos.github.io/personal-ai/',
+    orbit: { radius: 41.5, speed: 0.028, phase: 5.1, incl: -0.05, tilt: 0.0 },
+    body: { size: 1.28, spin: 0.11, colA: [0.05, 0.05, 0.07], colB: [0.55, 0.55, 0.6], colC: [0.92, 0.92, 0.95], atmo: [0.75, 0.75, 0.8], bands: 8, bandMix: 0.55, seed: 42.2, halo: true },
+  },
 ];
